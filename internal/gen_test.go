@@ -159,3 +159,33 @@ func TestGenerateTableSqlDuplicateFields(t *testing.T) {
 		t.Errorf("Expected error for duplicated field names, got nil")
 	}
 }
+
+func TestContainsDuplicatedFieldNames(t *testing.T) {
+	cases := []struct {
+		name   string
+		input  []string
+		expect bool
+	}{
+		{"empty slice", []string{}, false},
+		{"single field", []string{"title"}, false},
+		{"single field with type", []string{"title:string"}, false},
+		{"no duplicates", []string{"title:string", "body:text", "age:int"}, false},
+		{"duplicate names same type", []string{"title:string", "title:string"}, true},
+		{"duplicate names different types", []string{"title:string", "title:int"}, true},
+		{"duplicate plain names no colon", []string{"title", "title"}, true},
+		{"duplicate via mixed colon and plain", []string{"title:string", "title"}, true},
+		{"multiple colons uses first segment", []string{"title:string:extra", "title:int"}, true},
+		{"case insensitive duplicate", []string{"Title:string", "title:string"}, true},
+		{"all same name", []string{"x:string", "x:int", "x:text"}, true},
+		{"duplicate not adjacent", []string{"a:string", "b:int", "a:text"}, true},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			result := ContainsDuplicatedFieldNames(tc.input)
+			if result != tc.expect {
+				t.Errorf("ContainsDuplicatedFieldNames(%v) = %v, expected %v", tc.input, result, tc.expect)
+			}
+		})
+	}
+}

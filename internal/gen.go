@@ -21,7 +21,7 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 		return "", fmt.Errorf("error: table name cannot be empty")
 	}
 
-	if containsDuplicatedNames(fields) {
+	if ContainsDuplicatedFieldNames(fields) {
 		return "", fmt.Errorf("error: field names must be unique")
 	}
 
@@ -61,19 +61,19 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 	return b.String(), nil
 }
 
-// Reports if slice s contains duplicated field names
-func containsDuplicatedNames(s []string) bool {
-	names := make([]string, 0)
+// Reports if the slice fields contains duplicated field names
+func ContainsDuplicatedFieldNames(fields []string) bool {
+	checkList := make(map[string]bool, len(fields))
 
-	for _, field := range s {
+	for _, field := range fields {
 		name, _, _ := strings.Cut(field, ":")
-		names = append(names, name)
-	}
+		name = strings.ToLower(name)
 
-	for i, name := range names {
-		if slices.Contains(names[i+1:], name) {
+		if checkList[name] {
 			return true
 		}
+
+		checkList[name] = true
 	}
 
 	return false
