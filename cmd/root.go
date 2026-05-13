@@ -1,6 +1,3 @@
-/*
- * Copyright © 2026 Nelson Rodrigues <nelsonrodrigues87@outlook.com>
- */
 package cmd
 
 import (
