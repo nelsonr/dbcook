@@ -32,7 +32,7 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 		fieldName := f
 		fieldType := fieldTypes["string"]
 		hasTypeSep := strings.Contains(f, ":")
-		parts := SaneSplit(f, ":")
+		parts := strings.Split(f, ":")
 
 		if hasTypeSep && len(parts) < 2 {
 			return "", fmt.Errorf("error: invalid field '%s'", f)
