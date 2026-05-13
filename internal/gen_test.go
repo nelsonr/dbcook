@@ -10,18 +10,24 @@ var scenario01 = `CREATE TABLE IF NOT EXISTS blog_posts (
   id INTEGER PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   url VARCHAR(255) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
 `
 
 var scenario02 = `CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY,
   age INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
 `
 
 var scenario03 = `CREATE TABLE IF NOT EXISTS articles (
   id INTEGER PRIMARY KEY,
   body TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
 `
 
@@ -30,17 +36,23 @@ var scenario04 = `CREATE TABLE IF NOT EXISTS products (
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   price INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
 `
 
 var scenario05 = `CREATE TABLE IF NOT EXISTS tags (
   id INTEGER PRIMARY KEY,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
 `
 
 var scenario06 = `CREATE TABLE IF NOT EXISTS posts (
   id INTEGER PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
 `
 
@@ -113,6 +125,21 @@ func TestGenerateTableSqlInvalidTypes(t *testing.T) {
 		_, err := GenerateTableSql("test_table", []string{"field:" + typeName})
 		if err == nil {
 			t.Errorf("Expected error for unsupported type %q, got nil", typeName)
+		}
+	}
+}
+
+func TestGenerateTableSqlReservedNames(t *testing.T) {
+	cases := []string{
+		"created_at",
+		"updated_at",
+		"created_at:datetime",
+		"updated_at:datetime",
+	}
+	for _, fieldName := range cases {
+		_, err := GenerateTableSql("test_table", []string{fieldName})
+		if err == nil {
+			t.Errorf("Expected error for reserved field name %q, got nil", fieldName)
 		}
 	}
 }

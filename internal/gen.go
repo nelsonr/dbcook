@@ -14,6 +14,11 @@ var fieldTypes = map[string]string{
 	"datetime": "DATETIME",
 }
 
+var reservedFields = []string{
+	"created_at",
+	"updated_at",
+}
+
 func GenerateTableSql(name string, fields []string) (string, error) {
 	var b strings.Builder
 
@@ -38,24 +43,30 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 			return "", fmt.Errorf("error: invalid field '%s'", f)
 		}
 
-		var err error
 		if len(parts) > 1 {
+			var ok bool
+			var err error
+
 			fieldName, err = NormalizeName(parts[0])
 			if err != nil {
 				return "", fmt.Errorf("%s", err)
 			}
 
-			mappedType, ok := fieldTypes[parts[1]]
-			if ok {
-				fieldType = mappedType
-			} else {
+			fieldType, ok = fieldTypes[parts[1]]
+			if !ok {
 				return "", fmt.Errorf("error: invalid field type '%s'", parts[1])
 			}
+		}
+
+		if slices.Contains(reservedFields, fieldName) {
+			return "", fmt.Errorf("error: '%s' is a reserved field name", fieldName)
 		}
 
 		fmt.Fprintf(&b, "  %s %s NOT NULL,\n", fieldName, fieldType)
 	}
 
+	fmt.Fprintf(&b, "  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n")
+	fmt.Fprintf(&b, "  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n")
 	fmt.Fprintf(&b, ");\n")
 
 	return b.String(), nil
