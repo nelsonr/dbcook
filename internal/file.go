@@ -6,18 +6,18 @@ import (
 )
 
 const (
-	PERM_DIR  = 0755
-	PERM_FILE = 0644
+	dirPerm  = 0755
+	filePerm = 0644
 )
 
-func CreateFile(dirPath string, filename string, content string) error {
-	err := os.MkdirAll(dirPath, PERM_DIR)
+func CreateFile(outputPath string, filename string, content string) error {
+	err := os.MkdirAll(outputPath, dirPerm)
 	if err != nil {
 		return err
 	}
 
-	filePath := path.Join(dirPath, filename)
-	err = os.WriteFile(filePath, []byte(content), PERM_FILE)
+	filePath := path.Join(outputPath, filename)
+	err = os.WriteFile(filePath, []byte(content), filePerm)
 	if err != nil {
 		return err
 	}
