@@ -66,7 +66,7 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 	}
 
 	fmt.Fprintf(&b, "  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n")
-	fmt.Fprintf(&b, "  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n")
+	fmt.Fprintf(&b, "  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP\n")
 	fmt.Fprintf(&b, ");\n")
 
 	return b.String(), nil
