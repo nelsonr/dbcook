@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var outputPath string
-
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
 	Use:     "generate",
@@ -37,10 +35,10 @@ func runGenerateCmd(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	outputPath = "."
+	outputPath := lib.ResolveOutputPath(cmd, ".")
 	err = lib.CreateFile(outputPath, filename, sql)
 	if err != nil {
-		cmd.PrintErrf("Error creating schema file: %s\n", filename)
+		cmd.PrintErrf("Error creating migration file: %s\n", filename)
 		cmd.PrintErrf("%s\n", err)
 		os.Exit(1)
 	}
@@ -49,15 +47,20 @@ func runGenerateCmd(cmd *cobra.Command, args []string) {
 }
 
 func init() {
+	// Register the "generate" command
+	//
+	// Usage example:
+	// dbcook generate posts title url
+	//
+	// This creates a migration file in the current working directory.
 	rootCmd.AddCommand(generateCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// generateCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// generateCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// Register the "--output" flag for the "generate" command.
+	//
+	// Usage example:
+	// dbcook generate posts title url --output db/migrations
+	//
+	// This creates a "db/migrations" output directory relative to the
+	// current working directory for the generated migration file.
+	generateCmd.Flags().String("output", ".", "output directory for the migration file")
 }

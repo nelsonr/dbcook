@@ -1,6 +1,6 @@
 # dbcook
 
-A CLI tool for generating and running SQL schemas, built in Go.
+A CLI tool for generating and running SQL migrations, built in Go.
 
 ## How to use
 
@@ -12,13 +12,13 @@ Creates a `dbcook.toml` config file in the current directory:
 dbcook init
 ```
 
-**Generate a schema**
+**Generate a migration**
 
 ```bash
 dbcook generate posts title url
 ```
 
-Creates the following schema file below. Filenames are always prefixed with a timestamp.
+Creates the following migration file (filenames are always prefixed with a timestamp).
 
 ```sql
 -- file: 1778764280802_create_posts.sql
@@ -33,35 +33,35 @@ CREATE TABLE IF NOT EXISTS posts (
 
 ## Config file
 
-The config file uses the **toml** format and can be automatically created by running the `dbcook init` command.
+The config file uses the **TOML** format and can be created by running the `dbcook init` command.
 
 ```toml
-# dbcook.toml
-output_path = "db/schema"
+# file: dbcook.toml
+output_path = "db/migrations"
 ```
 
 **OPTIONS**
 
-**output_path** &mdash; sets the output path relative to location of the config file.
+**output_path** &mdash; sets the output path relative to the location of the config file.
 
 ## Generated files
 
-The rules for determining the location of the generated schema files are the following:
+The rules for determining the output location of the generated migration files are the following:
 
-1. **`--out <dir>` flag** &mdash; explicitly sets the location to the provided path.
-2. **`dbcook.toml` config file** &mdash; If present, it'll use relative location defined by the `output_path`.
-3. **Current working directory** &mdash; if no flag and no config are found, files are created at the location where the command was run.
+1. **`--output <dirpath>` flag** &mdash; explicitly sets the location to the provided path.
+2. **`dbcook.toml` config file** &mdash; If present, it'll use a relative location defined by the `output_path`.
+3. **Current working directory** &mdash; if no flag and no config are found, file is created in the current working directory.
 
 
 ## Usage Examples
 
 ```bash
-# No config, files are placed at the location where the command was run
+# No config, migration file is created in the current working directory
 dbcook generate posts title url
 
-# With a dbcook.toml file, the files are placed at a relative location defined in by the output_path config
+# With a dbcook.toml file, the file is placed at a relative location defined in by the output_path config
 dbcook generate posts title url
 
-# Override for a one-off
-dbcook generate posts title url --out ./tmp/migrations
+# Output location set by the --output flag
+dbcook generate posts title url --output ./tmp/migrations
 ```

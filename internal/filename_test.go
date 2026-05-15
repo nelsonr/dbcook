@@ -153,3 +153,43 @@ func TestNormalizeNameSlash(t *testing.T) {
 		t.Errorf("expected '%s', got '%s'", expected, result)
 	}
 }
+
+func TestConvertToSnakeCaseAlreadyLower(t *testing.T) {
+	expected := "output"
+	result := ConvertToSnakeCase("output")
+	if result != expected {
+		t.Errorf("expected '%s', got '%s'", expected, result)
+	}
+}
+
+func TestConvertToSnakeCaseCamelCase(t *testing.T) {
+	expected := "output_dir"
+	result := ConvertToSnakeCase("outputDir")
+	if result != expected {
+		t.Errorf("expected '%s', got '%s'", expected, result)
+	}
+}
+
+func TestConvertToSnakeCaseMultipleWords(t *testing.T) {
+	expected := "my_flag_name"
+	result := ConvertToSnakeCase("myFlagName")
+	if result != expected {
+		t.Errorf("expected '%s', got '%s'", expected, result)
+	}
+}
+
+func TestConvertToSnakeCaseLeadingUppercase(t *testing.T) {
+	expected := "output_dir"
+	result := ConvertToSnakeCase("OutputDir")
+	if result != expected {
+		t.Errorf("expected '%s', got '%s'", expected, result)
+	}
+}
+
+func TestConvertToSnakeCaseEmptyString(t *testing.T) {
+	expected := ""
+	result := ConvertToSnakeCase("")
+	if result != expected {
+		t.Errorf("expected '%s', got '%s'", expected, result)
+	}
+}

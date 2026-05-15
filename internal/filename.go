@@ -33,7 +33,24 @@ func NormalizeName(name string) (string, error) {
 	}
 
 	sep := regexp.MustCompile(`[^a-zA-Z0-9_]`)
-	result := sep.ReplaceAll([]byte(name), []byte("_"))
+	result := string(sep.ReplaceAll([]byte(name), []byte("_")))
+	result = ConvertToSnakeCase(result)
 
-	return string(result), nil
+	return result, nil
+}
+
+// Converts the string s to snake_case
+//
+// Example: "theBestName" -> "the_best_name"
+func ConvertToSnakeCase(s string) string {
+	var result strings.Builder
+
+	for i, char := range s {
+		if char >= 'A' && char <= 'Z' && i > 0 {
+			fmt.Fprint(&result, "_")
+		}
+		fmt.Fprintf(&result, "%v", strings.ToLower(string(char)))
+	}
+
+	return result.String()
 }
