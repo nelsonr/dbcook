@@ -20,7 +20,13 @@ var reservedFields = []string{
 }
 
 func GenerateTableSql(name string, fields []string) (string, error) {
-	var b strings.Builder
+	var (
+		output    strings.Builder
+		fieldName string
+		fieldType string
+		err       error
+		ok        bool
+	)
 
 	if name == "" {
 		return "", fmt.Errorf("error: table name cannot be empty")
@@ -30,12 +36,12 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 		return "", fmt.Errorf("error: field names must be unique")
 	}
 
-	fmt.Fprintf(&b, "CREATE TABLE IF NOT EXISTS %s (\n", name)
-	fmt.Fprintf(&b, "  id INTEGER PRIMARY KEY,\n")
+	fmt.Fprintf(&output, "CREATE TABLE IF NOT EXISTS %s (\n", name)
+	fmt.Fprintf(&output, "  id INTEGER PRIMARY KEY,\n")
 
 	for _, f := range fields {
-		fieldName := f
-		fieldType := fieldTypes["string"]
+		fieldName = f
+		fieldType = fieldTypes["string"]
 		hasTypeSep := strings.Contains(f, ":")
 		parts := strings.Split(f, ":")
 
@@ -44,9 +50,6 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 		}
 
 		if len(parts) > 1 {
-			var ok bool
-			var err error
-
 			fieldName, err = NormalizeName(parts[0])
 			if err != nil {
 				return "", fmt.Errorf("%s", err)
@@ -62,17 +65,17 @@ func GenerateTableSql(name string, fields []string) (string, error) {
 			return "", fmt.Errorf("error: '%s' is a reserved field name", fieldName)
 		}
 
-		fmt.Fprintf(&b, "  %s %s NOT NULL,\n", fieldName, fieldType)
+		fmt.Fprintf(&output, "  %s %s NOT NULL,\n", fieldName, fieldType)
 	}
 
-	fmt.Fprintf(&b, "  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n")
-	fmt.Fprintf(&b, "  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP\n")
-	fmt.Fprintf(&b, ");\n")
+	fmt.Fprintf(&output, "  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n")
+	fmt.Fprintf(&output, "  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP\n")
+	fmt.Fprintf(&output, ");\n")
 
-	return b.String(), nil
+	return output.String(), nil
 }
 
-// Reports if the slice fields contains duplicated field names
+// Reports if fields contains duplicated names
 func ContainsDuplicatedFieldNames(fields []string) bool {
 	checkList := make(map[string]bool, len(fields))
 

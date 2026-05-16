@@ -81,6 +81,6 @@ The rules for determining the output location of the generated migration files a
 
 ## Roadmap
 
-- [ ] Implement `init` command
+- [x] Implement `init` command
 - [x] Implement `generate` command
 - [ ] Implement `migrate` command
