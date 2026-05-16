@@ -12,7 +12,7 @@ Creates a `dbcook.toml` config file in the current directory:
 dbcook init
 ```
 
-**Generate a migration**
+**Create a migration file**
 
 ```bash
 dbcook generate posts title url
@@ -40,11 +40,34 @@ The config file uses the **TOML** format and can be created by running the `dbco
 output_path = "db/migrations"
 ```
 
-**OPTIONS**
+The option **output_path** sets the output path for the generated migration files, relative to the location of the config file.
 
-**output_path** &mdash; sets the output path relative to the location of the config file.
+## Commands
 
-## Generated files
+This section describes the available commands of `dbcook`.
+
+### Init
+
+**Status:** *Not implemented yet*
+
+### Generate
+
+The `generate` (alias `g`) generates a migration file from its arguments.
+
+**Usage:**
+
+```bash
+# Generates a migration file in the current directory or 
+# relative to the path set in the dbcook.toml file, if present.
+dbcook generate posts title url
+
+# Use the --output flag to explicitly set the output path for
+# the generated migration file.
+dbcook generate posts title url --output ./tmp/migrations
+
+# Use the --print flag to print to stdout instead of creating a file.
+dbcook generate posts title url --print
+```
 
 The rules for determining the output location of the generated migration files are the following:
 
@@ -52,16 +75,12 @@ The rules for determining the output location of the generated migration files a
 2. **`dbcook.toml` config file** &mdash; If present, it'll use a relative location defined by the `output_path`.
 3. **Current working directory** &mdash; if no flag and no config are found, file is created in the current working directory.
 
+### Migrate
 
-## Usage Examples
+**Status:** *Not implemented yet*
 
-```bash
-# No config, migration file is created in the current working directory
-dbcook generate posts title url
+## Roadmap
 
-# With a dbcook.toml file, the file is placed at a relative location defined in by the output_path config
-dbcook generate posts title url
-
-# Output location set by the --output flag
-dbcook generate posts title url --output ./tmp/migrations
-```
+- [ ] Implement `init` command
+- [x] Implement `generate` command
+- [ ] Implement `migrate` command
