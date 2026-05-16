@@ -18,8 +18,6 @@ dbcook init
 dbcook generate posts title url
 ```
 
-Creates the following migration file (filenames are always prefixed with a timestamp).
-
 ```sql
 -- file: 1778764280802_create_posts.sql
 CREATE TABLE IF NOT EXISTS posts (
@@ -29,6 +27,12 @@ CREATE TABLE IF NOT EXISTS posts (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 );
+```
+
+**Run database migrations**
+
+```bash
+dbcook migrate db/blog.db
 ```
 
 ## Config file
@@ -56,10 +60,9 @@ The `init` command initializes a `dbcook.toml` config file in the current workin
 dbcook init
 ```
 
-
 ### Generate
 
-The `generate` (alias `g`) generates a migration file from its arguments.
+The `generate` (alias `g`) command generates a migration file from its arguments.
 
 **Usage:**
 
@@ -76,7 +79,7 @@ dbcook generate posts title url --output ./tmp/migrations
 dbcook generate posts title url --print
 ```
 
-The rules for determining the output location of the generated migration files are the following:
+The rules for determining the output location of the migration files are the following:
 
 1. **`--output <dirpath>` flag** &mdash; explicitly sets the location to the provided path.
 2. **`dbcook.toml` config file** &mdash; If present, it'll use a relative location defined by the `output_path`.
@@ -84,10 +87,34 @@ The rules for determining the output location of the generated migration files a
 
 ### Migrate
 
-**Status:** *Not implemented yet*
+The `migrate` command runs the migrations files on the given SQLite database.
+
+It will try to obtain the path to the migrations folder from the config file. 
+If not found, it'll look for migration files in the current working directory.
+
+The migrations are run by alphabetical order of the `.sql` files.
+
+**Usage:**
+```bash
+# The second argument is the path to the database file.
+dbcook migrate db/blog.db
+
+# Connected to database: db/blog.db
+# 
+# Found 3 migration file(s)
+# 
+# Running migration: 1778958053498_create_posts.sql
+# Running migration: 1778959968418_create_photos.sql
+# Running migration: 1778962504881_create_comments.sql
+# 
+# Completed 3 migrations successfully!
+```
 
 ## Roadmap
 
 - [x] Implement `init` command
+  - [ ] Add option for the database file path
 - [x] Implement `generate` command
-- [ ] Implement `migrate` command
+  - [ ] Add support for additional data types
+- [x] Implement `migrate` command
+  - [ ] Allow overriding the path to the migrations directory

@@ -9,6 +9,9 @@ test-verbose:
 build:
 	go build
 
+install:
+	go install
+
 lint:
 	golangci-lint run
 

@@ -2,7 +2,8 @@ package lib
 
 import (
 	"os"
-	"path"
+	"path/filepath"
+	"strings"
 )
 
 const (
@@ -16,11 +17,37 @@ func CreateFile(outputPath string, filename string, content string) error {
 		return err
 	}
 
-	filePath := path.Join(outputPath, filename)
+	filePath := filepath.Join(outputPath, filename)
 	err = os.WriteFile(filePath, []byte(content), filePerm)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil && os.IsNotExist(err) {
+		return false
+	}
+
+	return true
+}
+
+func ListMigrationFiles(path string) ([]string, error) {
+	filenames := []string{}
+	files, err := os.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, file := range files {
+		name := file.Name()
+		if strings.HasSuffix(name, ".sql") {
+			filenames = append(filenames, name)
+		}
+	}
+
+	return filenames, nil
 }
