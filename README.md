@@ -48,7 +48,14 @@ This section describes the available commands of `dbcook`.
 
 ### Init
 
-**Status:** *Not implemented yet*
+The `init` command initializes a `dbcook.toml` config file in the current working directory.
+
+**Usage:**
+
+```bash
+dbcook init
+```
+
 
 ### Generate
 
