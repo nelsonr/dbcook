@@ -100,7 +100,6 @@ The migrations are run by alphabetical order of the `.sql` files.
 dbcook migrate db/blog.db
 
 # Connected to database: db/blog.db
-# 
 # Found 3 migration file(s)
 # 
 # Running migration: 1778958053498_create_posts.sql

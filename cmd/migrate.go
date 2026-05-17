@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -21,17 +20,21 @@ var migrateCmd = &cobra.Command{
 
 func runMigrateCmd(cmd *cobra.Command, args []string) {
 	// 1. Check if database file exists
-	dbPath := args[0]
-	if !lib.FileExists(dbPath) {
-		cmd.PrintErrf("Database file not found: %s\n", dbPath)
+	dataSource := args[0]
+	if !lib.FileExists(dataSource) {
+		cmd.PrintErrf("Database file not found: %s\n", dataSource)
 		os.Exit(1)
 	}
 
 	// 2. Open connection to database
-	// The sqlite driver never errors on Open.
-	db, _ := sql.Open("sqlite", dbPath)
+	db, err := lib.GetDBConnection("sqlite", dataSource)
+	if err != nil {
+		cmd.PrintErrf("Error connecting to database: %s", dataSource)
+		cmd.PrintErrln(err)
+		os.Exit(1)
+	}
 	defer db.Close()
-	fmt.Printf("Connected to database: %s\n\n", dbPath)
+	fmt.Printf("Connected to database: %s\n", dataSource)
 
 	// TODO: Add flag to override the migrations directory path
 	//
@@ -47,7 +50,7 @@ func runMigrateCmd(cmd *cobra.Command, args []string) {
 	// 4. Obtain list of migration filenames
 	files, err := lib.ListMigrationFiles(dirPath)
 	if err != nil {
-		cmd.PrintErrf("Error reading files in %s", dirPath)
+		cmd.PrintErrf("Error reading files in %s\n", dirPath)
 		os.Exit(1)
 	}
 
@@ -74,7 +77,7 @@ func runMigrateCmd(cmd *cobra.Command, args []string) {
 		fmt.Printf("Running migration: %s\n", filename)
 		_, err = db.Exec(string(file))
 		if err != nil {
-			cmd.PrintErrf("Error while executing migration file, stopping...")
+			cmd.PrintErrln("Error while executing migration file, stopping...")
 			cmd.PrintErrln(err)
 			os.Exit(1)
 		}
